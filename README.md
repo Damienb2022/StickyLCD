@@ -9,6 +9,22 @@ Sticky notes on a Thermalright USB LCD: the 1920×462 "bar" screen with USB ID `
 - Runs from the system tray (Windows/Linux) or the Dock (macOS)
 
 > Not affiliated with or endorsed by Thermalright. The USB protocol was reverse-engineered for interoperability. No vendor code or files are included.
+>
+> First public release of StickyLCD – sticky notes, clock and today's calendar on the Thermalright USB LCD (0416:5408, 1920×462).
+
+**Tested:** Windows 10/11 with the screen attached.
+
+**Not yet tested on real hardware:** macOS and Linux. The builds are provided as-is. If you try one, please open an issue saying whether it worked, along with your OS version and any error shown in the status bar.
+
+| System | Download | First run |
+|---|---|---|
+| Windows | `StickyLCD.exe` | Windows SmartScreen may warn because the app isn't code-signed: **More info → Run anyway**. |
+| macOS | `StickyLCD-macos.zip` | Unzip, then right-click the app → **Open** (it's unsigned). |
+| Linux | `StickyLCD-linux` + `99-stickylcd.rules` | Install the udev rule first (see `packaging/linux/README.md`), then `chmod +x StickyLCD-linux`. |
+
+Quit TRCC before starting StickyLCD: only one program can drive the screen at a time.
+
+To check a download, compare it with `SHA256SUMS.txt`.
 
 ## Download
 
