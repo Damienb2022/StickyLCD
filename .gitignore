@@ -1,0 +1,25 @@
+# build output
+build/
+dist/
+*.spec
+icon.ico
+icon.png
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# private: local notes for the maintainer, never published
+HANDOFF.md
+*.local.md
+
+# editor / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# never commit personal data or settings
+notes*.json
+settings*.json
+.env

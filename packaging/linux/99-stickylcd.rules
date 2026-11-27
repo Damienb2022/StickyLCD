@@ -1,0 +1,3 @@
+# Lets the person logged in at the computer use the Thermalright USB LCD (0416:5408)
+# without root. "uaccess" grants access only to the active local session - not to every user.
+SUBSYSTEM=="usb", ATTRS{idVendor}=="0416", ATTRS{idProduct}=="5408", TAG+="uaccess"

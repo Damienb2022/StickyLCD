@@ -1,0 +1,80 @@
+# Builds StickyLCD for Windows, macOS and Linux on every push and pull request.
+# Pushing a tag like v1.2.0 also creates a draft GitHub release with the three builds attached.
+name: build
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+
+permissions:
+  contents: read   # least privilege; only the release job below can write
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            artifact: StickyLCD-windows
+          - os: macos-latest
+            artifact: StickyLCD-macos
+          - os: ubuntu-22.04
+            artifact: StickyLCD-linux
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Check the code compiles
+        run: python -m compileall -q app.py calendar_client.py platform_support.py renderer.py lcd_device.py
+
+      - name: Build (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: ./build.ps1
+
+      - name: Build (macOS / Linux)
+        if: runner.os != 'Windows'
+        run: |
+          chmod +x build.sh
+          ./build.sh
+
+      - name: Package
+        shell: bash
+        run: |
+          mkdir -p out
+          case "${{ runner.os }}" in
+            Windows) cp dist/StickyLCD.exe out/ ;;
+            macOS)   (cd dist && ditto -c -k --keepParent StickyLCD.app ../out/StickyLCD-macos.zip) ;;
+            Linux)   cp dist/StickyLCD out/StickyLCD-linux && cp packaging/linux/99-stickylcd.rules out/ ;;
+          esac
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: out/*
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: out
+          merge-multiple: true
+      - name: Checksums
+        run: cd out && sha256sum * > SHA256SUMS.txt
+      - name: Draft release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "${{ github.ref_name }}" out/* --repo "${{ github.repository }}" --draft --title "StickyLCD ${{ github.ref_name }}" --notes "Builds for Windows, macOS and Linux. See README for setup."
