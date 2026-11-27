@@ -66,8 +66,6 @@ powershell -ExecutionPolicy Bypass -File build.ps1   # Windows -> dist\StickyLCD
 ./build.sh                                          # macOS -> dist/StickyLCD.app, Linux -> dist/StickyLCD
 ```
 
-Pushing a `v*` tag makes GitHub Actions build all three and attach them to a draft release.
-
 | File | Purpose |
 |---|---|
 | `app.py` | Window, editor, settings, tray and the screen thread |
